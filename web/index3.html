@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Example-11</title>
+    <meta charset="utf-8">
+    <link href=bootstrap-3.1.1-dist/css/bootstrap.css rel=stylesheet media="screen">
+	
+ 
+</head>
+<style>
+    #editor
+    {
+        font: 10px sans-serif;
+    }
+
+    #code
+    {
+        font: 10px sans-serif;
+    }
+
+    .axis text {
+        font: 10px sans-serif;
+    }
+
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: #000;
+    }
+
+    .outer {
+        fill: none;
+        stroke: #cc2316;
+    }
+
+
+
+    .arc path {
+        stroke: #fff;
+    }
+
+
+</style>
+
+
+<div class="row">
+    <div class="col-lg-6" id ="svgArea"></div>
+    <!--<div class="col-md-4" id ="editor"></div>-->
+    <div class="col-lg-6" id ="svg2"></div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6" id ="svg3"></div>
+    <!--<div class="col-md-4" id ="editor"></div>-->
+    <div class="col-lg-6" id ="svg4"></div>
+</div>
+
+
+
+<!--<div id='editor'></div>-->
+
+
+<body>
+
+<script src=D3/d3.min.js></script>
+<script src=bootstrap-3.1.1-dist/js/jquery.min.js></script>
+<script src=bootstrap-3.1.1-dist/js/bootstrap.min.js></script>
+
+
+
+<script>
+    // Creates your margin and size of your canvas
+    var margin = {top: 20, right: 10, bottom: 20, left: 30};
+    width = 800 - margin.left - margin.right,
+    height = 800 - margin.top - margin.bottom;
+    var classes1= new Array();
+
+    // Check the API of d3 if you want to have a deeper understanding on how scales work.
+    // This variables are global, so if you are interested go to console and type:
+    // x.range()
+    // y.range()
+    // See that there is no domain defined.....yet!
+    var x = d3.scale.linear().range([0, width]);
+    var y = d3.scale.linear().range([height, 0]);
+
+
+
+    d3.select("#svgArea").style("background-color", "aliceblue");
+
+    // D3 is awesome, it already has SVG's that help you create axis
+    var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom")
+            .ticks(15)
+
+
+    var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+            .ticks(10);
+
+
+    // In order for the margins to work we need to append a "g" (graphic) element to our svg
+    var svg = d3.select("#svgArea").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+
+            // Remember the modules in the presentation? This is where the fun begins
+            // 1. Create a global variable and check in console how the data variable returns the information from "data-2.csv"
+
+            
+        d3.csv("Dota_Labels.csv", function(error, data)
+    {
+        //Converting my strings in int's
+        data.forEach(function(d)
+        {
+            d.x = +d.x;
+            d.y  = +d.y;
+            d.Label_Value  = +d.Label_Value;
+
+            
+        });
+        
+                
+        //x.domain([1, data.length+ 1]);
+        x.domain(d3.extent(data, function(d){ return (d.x)})).nice();
+        y.domain(d3.extent(data, function(d){ return (d.y)})).nice();
+        
+        var map_colors=new Array();
+        var colors = new Array();
+        var label_value = new Array();
+        
+        red=50;
+        green=120;
+        blue = 200;
+        
+         for (var i = 0; i<data.length; i++)
+        {
+        
+            red = (red+50)%250;
+            green = (green+35)%250;
+            blue = (blue + 150)%250;
+            
+            var row = d3.values(data[i]);
+        
+            if (map_colors.indexOf(row[2]) == -1)
+                {    
+                    map_colors.push(row[2]);
+                    label_value.push(row[3]);
+                    colors.push("rgb("+red+","+green+","+blue+")");
+                }    
+            
+    
+            
+        }
+        
+        
+           console.log(map_colors) 
+           console.log(colors) 
+           console.log(label_value) 
+        // I create several circles according to the length of my array.
+        // pay attention about the positioning of my circles
+        var circle = svg.append("g")
+                .selectAll("rect")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("x", function(d){ return x(d.x)})
+                .attr("y", function(d){ return y(d.y)})
+                .attr("height", 6.75)
+                .attr("width", 6.75)
+                .style("fill", function(d) {return colors[label_value.indexOf(d.Label_Value)]})
+                
+             var legend = svg.selectAll(".legend")
+      .data(colors)
+        .enter()
+        .append("g")
+      .attr("class", "legend")
+     .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  legend.append("rect")
+      .attr("x", width-10)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", function(d) {return d});
+
+  legend.append("text")
+      .attr("x", width - 15)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) {return map_colors[colors.indexOf(d)]});   
+      //.text(function(d) { return d; });   
+
+        // Print by the mouseout or mouseover in the console per moueout this.__data__ and identify what is printed
+
+        // Append the x axis
+    
+            
+       
+        
+        dimensions = d3.keys(data[0]);
+       
+
+        
+
+
+
+});
+
+/*$.ajax({
+                                type: "GET",       // the dNodeNameefault
+                                url: "controller",
+                                data: { },
+                                success: function(data){
+                                    console.log("masterzones");
+                                    console.log(JSON.parse(data));
+                                }
+                            });*/
+                            
+        d3.json("controller", function(error, data)
+    {
+          console.log("masterzones");
+        console.log(data);
+        var tsync=new Array();
+        //Converting my strings in int's
+        data.forEach(function(d)
+        {
+           // console.log(d)
+            d.x = +d.x;
+            d.y  = +d.y;
+            d.tsync  = +d.tsync;
+            d.match  = +d.match;
+            if(tsync.indexOf(d.tsync)==-1)
+            {
+                tsync.push(d.tsync);
+            }
+            //d.Label_Value  = +d.Label_Value;
+
+            
+        });
+        var nest = d3.nest().key(function(d){return d.tsync}).entries(data);
+        console.log(nest);
+        //console.log(data[data['tsync'].indexOf(1)]['x']) ;
+       
+       var plot = function(timepoint){
+           var clas="tsync"+timepoint.key;
+           var remclas="tsync"+(timepoint.key-1);
+           //console.log(timepoint.values);
+           $("."+remclas).remove();
+           var temp=timepoint.values;
+           svg.append("g")
+                         .selectAll(".taha")
+                .data(temp)
+                .enter()
+                
+                .append("rect")
+                .attr("class",clas+" taha")
+                .attr("x", function(d){return x(d.x);})
+                .attr("y", function(d){ return y(d.y)})
+                .attr("height", 6.75)
+                .attr("width", 6.75)
+                .style("opacity", 1)
+                //.style("fill", "none")
+                .style("fill", function(d){if(d.team=="\"radiant\""){return "red";} else{return "blue";}})
+          /* for(players in temp){
+              //for(player in timepoint[players]){
+                  //console.log(timepoint[players][player]);
+                  console.log('players');
+                   console.log(players);
+                  svg.append("g")
+                         .selectAll(".taha")
+                .data(timepoint[players])
+                .enter()
+                
+                .append("rect")
+                //.attr("class",clas+" taha")
+                .attr("x", function(d){console.log(d);return x(d.x);})
+                .attr("y", function(d){ return y(d.y)})
+                .attr("height", 6.75)
+                .attr("width", 6.75)
+                .style("opacity", 1)
+                //.style("fill", "none")
+                .style("fill", function(d){if(d.team=="\"radiant\""){return "red";} else{return "blue";}})
+                  
+              //}
+           };*/
+       }
+       
+       var nestLength = nest.length;
+       var i = 0;
+       var animationLoop = function(){
+           
+            plot(nest[i%nestLength]);
+           
+            i++;
+            
+                setTimeout(animationLoop, 1000/10);
+           
+            
+           
+       }
+       
+       animationLoop();
+       
+       
+       
+        if(false)//nest.forEach(function(m)
+        {
+          var clas="tsync"+m.key; 
+          classes1.push(clas);
+          var remClas="tsync"+(m.values[0].tsync-1); 
+          //console.log(m.values);
+          //console.log(clas);
+          //console.log("rem"+remClas);
+         var playerids=new Array();
+         
+       
+             var player = svg.append("g")
+                         .selectAll(".taha")
+                .data(m.values)
+                .enter()
+                
+                .append("rect")
+                .attr("class",clas+" taha")
+                .attr("x", function(d){return x(d.x);})
+                .attr("y", function(d){ return y(d.y)})
+                .attr("height", 6.75)
+                .attr("width", 6.75)
+                .style("opacity", 1)
+                //.style("fill", "none")
+                .style("fill", function(d){if(d.team=="\"radiant\""){return "red";} else{return "blue";}})
+                //.selectAll("."+remClas).transition()
+                //.delay(1500).remove()
+                //svg.selectAll("."+remClas).transition().delay(1500).remove()
+         
+         
+                 /*
+                  * .data(m.values[i])
+                .enter()
+                .append("rect")
+                .attr("class",clas)
+                .attr("x", function(d){console.log(d);playerids.push(d.player);return x(d.x);})
+                .attr("y", function(d){ return y(d.y)})
+                .attr("height", 6.75)
+                .attr("width", 6.75)
+                .style("fill", function(d){if(d.team=="\"radiant\""){return "red";} else{return "blue";}})
+                  */
+            
+        }//);
+        //displayRun(nest);
+        
+    });
+    function runDisplay()
+    {
+        svg.selectAll(".taha")
+                .style("opacity", 0)
+        svg.selectAll(".taha").data(classes1)
+                .enter().style("opacity", 1)
+    }
+    function displayRun(nest)
+    {
+        nest.forEach(function(m)
+        {
+          var clas="tsync"+m.values[0].tsync; 
+          var remClas="tsync"+(m.values[0].tsync-1); 
+          //console.log(m.values);
+          //console.log(clas);
+          //console.log("rem"+remClas);
+         var playerids=new Array();
+         for(var i=0; i<m.values.length;i++)
+         {
+       
+            // var player = svg
+              //           .selectAll("taha")
+                //.data(m.values)
+                //.enter()
+        
+        d3.selectAll(".taha").data(m)
+                .enter().select(".tsync"+m.key).transition()
+    .delay(750)
+    .style("fill", "red");
+                //.style("fill", "none")
+                //.style("fill", function(d){if(m.values[i].team=="\"radiant\""){return "red";} else{return "blue";}})
+                //.selectAll("."+remClas).transition()
+                //.delay(1500).remove()
+                //svg.selectAll("."+remClas).transition().delay(1500).remove()
+         }
+        /* for(var i=0; i<m.values.length;i++)
+         {
+       
+                d3.selectAll(".taha").transition().delay(1500).style("fill","pink");
+                d3.selectAll("."+clas).transition().delay(1500).style("fill",function(d){if(m.values[i].team=="\"radiant\""){return "red";} else{return "blue";}});
+                
+         }*/
+         
+                
+            
+        });
+    }
+                                       
+        
+</script>
+
+
+
+</body>
+</html>
