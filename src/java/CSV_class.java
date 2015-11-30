@@ -24,7 +24,7 @@ class CSV_class {
     String json=new String();
     
        public String readObjectsFromCsv() throws IOException {
-           String csvFile = "/home/taha/Documents/gitrepos/WebApplication1/src/java/master-zones.csv";
+           String csvFile = "/home/taha/Documents/gitrepos/DOTA/src/java/master_zones.csv";
 
        //create BufferedReader to read csv file
       try{ BufferedReader br = new BufferedReader(new FileReader(csvFile));

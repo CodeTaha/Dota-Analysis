@@ -4,10 +4,11 @@ mysqlimport  --ignore-lines=1 --fields-terminated-by=, --columns='t,x,y,match,te
 
 mysqlimport  --ignore-lines=1 --fields-terminated-by=, --columns='t,x,y,match,team,player,won,tstd,tsync,tper,tier,zone' --local -u root -p DOTA /home/taha/Documents/gitrepos/DOTA/src/java/master_zones.csv
 
-LOAD DATA LOCAL INFILE '/home/taha/Documents/gitrepos/DOTA/src/java/master_zones.csv'
+LOAD DATA LOCAL INFILE '/home/taha/Documents/gitrepos/DOTA/src/java/master-zone-test.csv'
 INTO TABLE DOTA.master_zones
 FIELDS TERMINATED by ','
 LINES TERMINATED BY '\n'
+IGNORE 1 LINES;
 
 LOAD DATA LOCAL INFILE '/home/taha/Documents/gitrepos/DOTA/src/java/master_distance.csv'
 INTO TABLE DOTA.master-distance

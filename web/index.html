@@ -1,255 +1,117 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>DOTA-2 Pro Analysis</title>
     <meta charset="utf-8">
     <link href=bootstrap-3.1.1-dist/css/bootstrap.css rel=stylesheet media="screen">
-	
- 
-</head>
-<style>
-    #editor
-    {
+    <style>
+      #editor
+      {
         font: 10px sans-serif;
-    }
-
-    #code
-    {
+      }
+        
+      #code
+      {
         font: 10px sans-serif;
-    }
-
-    .axis text {
+      }
+        
+      .axis text {
         font: 10px sans-serif;
-    }
-
-    .axis path,
-    .axis line {
+      }
+        
+      .axis path,
+      .axis line {
         fill: none;
         stroke: #000;
-    }
-
-    .outer {
+      }
+        
+      .outer {
         fill: none;
         stroke: #cc2316;
-    }
-
-
-
-    .arc path {
+      }
+        
+        
+        
+      .arc path {
         stroke: #fff;
-    }
-
-
-</style>
-
-
-<div class="row">
-    <div class="col-lg-6" id ="svgArea"></div>
-    <!--<div class="col-md-4" id ="editor"></div>-->
-    <div class="col-lg-6" id ="svg2"></div>
-</div>
-
-<div class="row">
-    <div class="col-lg-6" id ="svg3"></div>
-    <!--<div class="col-md-4" id ="editor"></div>-->
-    <div class="col-lg-6" id ="svg4"></div>
-</div>
-
-
-
-<!--<div id='editor'></div>-->
-
-
-<body>
-
-<script src=D3/d3.min.js></script>
-<script src=bootstrap-3.1.1-dist/js/jquery.min.js></script>
-<script src=bootstrap-3.1.1-dist/js/bootstrap.min.js></script>
-
-
-
-<script>
-    // Creates your margin and size of your canvas
-    var margin = {top: 20, right: 10, bottom: 20, left: 30};
-    width = 800 - margin.left - margin.right,
-    height = 800 - margin.top - margin.bottom;
-    var classes1= new Array();
-
-    // Check the API of d3 if you want to have a deeper understanding on how scales work.
-    // This variables are global, so if you are interested go to console and type:
-    // x.range()
-    // y.range()
-    // See that there is no domain defined.....yet!
-    var x = d3.scale.linear().range([0, width]);
-    var y = d3.scale.linear().range([height, 0]);
-
-
-
-    d3.select("#svgArea").style("background-color", "aliceblue");
-
-    // D3 is awesome, it already has SVG's that help you create axis
-    var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom")
-            .ticks(15)
-
-
-    var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left")
-            .ticks(10);
-
-
-    // In order for the margins to work we need to append a "g" (graphic) element to our svg
-    var svg = d3.select("#svgArea").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-
-
-            // Remember the modules in the presentation? This is where the fun begins
-            // 1. Create a global variable and check in console how the data variable returns the information from "data-2.csv"
-
-         	d3.csv("Dota_Labels.csv", function(error, data)
-		{
-			//Converting my strings in int's
-			data.forEach(function(d)
-			{
-				d.x = +d.x;
-				d.y  = +d.y;
-				d.Label_Value  = +d.Label_Value;
-
-				
-			});
-		
-		        
-		//x.domain([1, data.length+ 1]);
-        x.domain(d3.extent(data, function(d){ return d.x})).nice();
-        y.domain(d3.extent(data, function(d){ return d.y})).nice();
-		
-	
-		console.log(data[1])
-       var colorScale=d3.scale.category20();
-       colorScale.domain(data.map(function(d) { return d.Section_Label; }));
-       console.log('c1',colorScale.range(), colorScale.domain());
-        var circle = svg.append("g")
-                .selectAll("rect")
-                .data(data)
-                .enter()
-                .append("rect")
-                .attr("x", function(d){ return x(d.x)})
-                .attr("y", function(d){ return y(d.y)})
-                .attr("height", 5.75)
-                .attr("width", 5.75)
-                //.style("fill", function(d) {return colors[label_value.indexOf(d.Label_Value)]})
-                .style("fill", function(d) {return colorScale(d.Section_Label)})
-            
-		var svg2 = d3.select("svg");
-		 var legend = svg2.selectAll(".legend")
-			.data(colorScale.domain())
-			.enter()
-			.append("g")
-			.attr("class", "legend")
-			.attr("transform", function(d, i) { return "translate(40," + i * 20 + ")"; });
-
-			legend.append("rect")
-			.attr("x", width - 18)
-			.attr("width", 18)
-			.attr("height", 18)
-			.style("fill", function(d) {return colorScale(d)});
-
-			legend.append("text")
-			.attr("x", width-20 )
-			.attr("y", 9)
-			.attr("dy", ".35em")
-			.style("text-anchor", "end")
-			.text(function(d) {return d});
-
-			
-			
-
-})
+      }
+        
+        
+    </style>
+      
+  </head>
+  <body>
+    <div id="menu" class="row">
+      <div class="col-md-2">
+        <select class="form-control highlow" id="sel1">
+          <option value="1">Live Maps</option>
+          <option value="0">Heat Maps</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <select class="form-control highlow" id="sel2">
+          <option value="1">Color By Team</option>
+          <option value="0">Color By Win/Lose</option>
+        </select>
+      </div>
+      <div class="input-group col-md-2">
+        <span class="input-group-addon" id="sizing-addon2">Low</span>
+        <input type="text" class="form-control highlow" placeholder="Minimum 0" aria-describedby="sizing-addon2" id="low">
+        <span class="input-group-addon" id="sizing-addon3">High</span>
+        <input type="text" class="form-control highlow" placeholder="Max 4180" aria-describedby="sizing-addon3" id="highv">
+          
+      </div>
+      <button type="button" class="btn btn-success col-md-1" id="submit">Submit</button>
+      <button type="button" class="btn btn-danger col-md-1" id="clearMaps">Clear Maps</button>  
      
-                            
-        d3.json("controller?file=1", function(error, data)
-    {
-          //console.log("masterzones");
-       // console.log(data);
-        var tsync=new Array();
-        //Converting my strings in int's
-        data.forEach(function(d)
-        {
-           // console.log(d)
-            d.x = +d.x;
-            d.y  = +d.y;
-            d.tsync  = +d.tsync;
-            d.match  = +d.match;
-            if(tsync.indexOf(d.tsync)==-1)
-            {
-                tsync.push(d.tsync);
-            }
-            //d.Label_Value  = +d.Label_Value;
-
-            
-        });
-        var nest = d3.nest().key(function(d){return d.tsync}).entries(data);
-       // console.log(nest);
-        //console.log(data[data['tsync'].indexOf(1)]['x']) ;
-       console.log('GREAT',data[1]);
-       var plot = function(timepoint){
-           var clas="tsync"+timepoint.key;
-           var remclas="tsync"+(timepoint.key-1);
-           //console.log(timepoint.values);
-           $("."+remclas).remove();
-           var temp=timepoint.values;
-           svg.append("g")
-                .selectAll(".taha")
-                .data(temp)
-                .enter()
-                
-                .append("rect")
-                .attr("class",clas+" taha")
-                .attr("x", function(d){return x(d.x);})
-                .attr("y", function(d){ return y(d.y)})
-                .attr("height", 6.75)
-                .attr("width", 6.75)
-                .style("opacity", 1)
-                //.style("fill", "none")
-                .style("fill", function(d){if(d.team===0){return "blue";} else{return "red";}})
-         
-       }
-       
-       var nestLength = nest.length;
-       var i = 0;
-       var animationLoop = function(){
-           
-            plot(nest[i%nestLength]);
-           
-            i++;
-            
-                setTimeout(animationLoop, 1000/10);
-           
-            
-           
-       }
-       
-       animationLoop();
-       
-       
-       
-   
-        //displayRun(nest);
-        
-    });
-   
-   
-                                       
-        
-</script>
-
-
-
-</body>
+    </div>
+    <div class="container">
+      <div class="col-md-6">    
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h3 class="panel-title">Pro tier</h3>
+          </div>
+          <div class="panel-body">
+            <div class="col-lg-6" id ="pro"></div>
+          </div>
+        </div>
+      </div>    
+      <div class="col-md-6">    
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h3 class="panel-title">VeryHigh tier</h3>
+          </div>
+          <div class="panel-body">
+            <div class="col-lg-6" id ="vhigh"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">    
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h3 class="panel-title">High tier</h3>
+          </div>
+          <div class="panel-body">
+            <div class="col-lg-6" id ="high"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">    
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h3 class="panel-title">Normal (Novice) tier</h3>
+          </div>
+          <div class="panel-body">
+            <div class="col-lg-6" id ="normal"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+      
+      
+    <script src=D3/d3.min.js></script>
+    <script src=bootstrap-3.1.1-dist/js/jquery.min.js></script>
+    <script src=bootstrap-3.1.1-dist/js/bootstrap.min.js></script>
+    <script src="js/main.js"></script>
+  </body>
 </html>

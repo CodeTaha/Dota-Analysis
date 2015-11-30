@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DOTA-2 Pro Analysis</title>
+    <meta charset="utf-8">
+    <link href=bootstrap-3.1.1-dist/css/bootstrap.css rel=stylesheet media="screen">
+	
+ 
+</head>
+<style>
+    #editor
+    {
+        font: 10px sans-serif;
+    }
+
+    #code
+    {
+        font: 10px sans-serif;
+    }
+
+    .axis text {
+        font: 10px sans-serif;
+    }
+
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: #000;
+    }
+
+    .outer {
+        fill: none;
+        stroke: #cc2316;
+    }
+
+
+
+    .arc path {
+        stroke: #fff;
+    }
+
+
+</style>
+
+<div id="svgArea"></div>
+<div class="container">
+  <div class="col-md-6">    
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">Panel title</h3>
+      </div>
+      <div class="panel-body">
+        <div class="col-lg-6" id ="pro"></div>
+      </div>
+    </div>
+  </div>    
+</div>
+
+
+
+
+<!--<div id='editor'></div>-->
+
+
+<body>
+
+<script src=D3/d3.min.js></script>
+<script src=bootstrap-3.1.1-dist/js/jquery.min.js></script>
+<script src=bootstrap-3.1.1-dist/js/bootstrap.min.js></script>
+
+
+<script>
+  
+    // Creates your margin and size of your canvas
+    var margin = {top: 10, right: 10, bottom: 20, left: 10};
+    width = 500 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+    var pixl= 4;
+
+    var x = d3.scale.linear().range([0, width]);
+    var y = d3.scale.linear().range([height, 0]);
+   
+
+    var svg = d3.select("#svgArea").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + (margin.left) + "," + margin.top + ")");
+
+    d3.csv("Dota_Labels.csv", function(error, data) {
+			//Converting my strings in int's
+			data.forEach(function(d){
+				d.x = +d.x;
+				d.y  = +d.y;
+				d.Label_Value  = +d.Label_Value;
+			});
+      x.domain(d3.extent(data, function(d){ return d.x})).nice();
+      y.domain(d3.extent(data, function(d){ return d.y})).nice();
+		
+      var colorScale=d3.scale.ordinal();
+      colorScale.range([
+         "#262424", //void dire
+         "#425623", // void radiant
+         "#46514B", //toplane dire
+         "#f210f2", // laneshop dire
+         "#7B8F34", // base1 radiant
+         "#537739", // toplane radiant
+         "#486b2e", // jungle radiant
+         "#4f6499", // river
+         "#414347", // jungle dire
+         "#537739", // midlane radiant
+         "#f4ed1a", // secretshop radiant
+         "#537739", // bottomlane radiant
+         "#46514B", // midlane dire
+         "#f74909", // pit dire
+         "#7f7f7f", // base2 dire
+         "#f4ed1a", //secretshop dire
+         "#46514B", // bottomlane dire
+         "#f210f2"]);// laneshop radiant
+      colorScale.domain(data.map(function(d) { return d.Section_Label; }));
+      
+      console.log('c1',colorScale.range(), colorScale.domain());
+      
+      var bitmap = svg.append("g")
+              .selectAll("rect")
+              .data(data)
+              .enter()
+              .append("rect")
+              .attr("x", function(d){ return x(d.x)})
+              .attr("y", function(d){ return y(d.y)})
+              .attr("height", pixl)
+              .attr("width", pixl)
+              .style("fill", function(d) {return colorScale(d.Section_Label)})
+  
+      var svg2 = d3.select("svg");
+      var legend = svg2.selectAll(".legend")
+              .data(colorScale.domain())
+              .enter()
+              .append("g")
+              .attr("class", "legend")
+              .attr("transform", function(d, i) { return "translate(100," + i * 20 + ")"; });
+
+			legend.append("rect")
+              .attr("x", width - 18)
+              .attr("width", 18)
+              .attr("height", 18)
+              .style("fill", function(d) {return colorScale(d)});
+
+			legend.append("text")
+              .attr("x", width-20 )
+              .attr("y", 9)
+              .attr("dy", ".35em")
+              .style("text-anchor", "end")
+              .text(function(d) {return d});
+    });
+     
+                            
+       d3.json("api/dota/getMZ?tier=pro&high=100&low=0", function(error, data) {
+          //console.log("masterzones");
+        console.log(data);
+        var tsync=new Array();
+        //Converting my strings in int's
+        data.forEach(function(d){
+           // console.log(d)
+            d.x = +d.x;
+            d.y  = +d.y;
+            d.tsync  = +d.tsync;
+            if(tsync.indexOf(d.tsync)==-1)
+            {
+                tsync.push(d.tsync);
+            }
+        });
+        var nest = d3.nest().key(function(d){return d.tsync}).entries(data);
+        console.log("nest",nest);
+        console.log('GREAT',data[1]);
+        var plot = function(timepoint){
+          var clas="tsync1";//"tsync"+timepoint.key;
+          var remclas="tsync1";//"tsync"+(timepoint.key-1);
+          //console.log(timepoint.values);
+          //$("."+remclas).remove();
+          $(".taha").remove();
+          var temp=timepoint.values;
+          svg.append("g")
+                  .selectAll(".taha")
+                  .data(temp)
+                  .enter()
+
+                  .append("rect")
+                  .attr("class",clas+" taha")
+                  .attr("x", function(d){return x(d.x);})
+                  .attr("y", function(d){ return y(d.y)})
+                  .attr("height", pixl)
+                  .attr("width", pixl)
+                  .style("opacity", 1)
+                  //.style("fill", "none")
+                  .style("fill", function(d){if(d.team===0){return "blue";} else{return "red";}})
+         
+       }
+       
+       var nestLength = nest.length;
+       var i = 0;
+       var animationLoop = function(){
+        setTimeout(function() {
+          requestAnimationFrame(animationLoop);
+          // Drawing code goes here
+          plot(nest[i%nestLength]);
+          i++;
+        }, 1000 / 10);
+    }
+    
+       animationLoop();
+       //setTimeout(animationLoop, 1000/10);
+       /*
+        * plot(nest[i%nestLength]);
+           
+            i++;
+            
+                setTimeout(animationLoop, 1000/10);
+        */
+       
+   
+        //displayRun(nest);
+        
+    });
+   
+   
+                                       
+        
+</script>
+
+
+
+</body>
+</html>
