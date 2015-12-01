@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
 /**
  *
@@ -115,4 +116,42 @@ public class Models {
         return "{\"error\":\""+e+"\"}";
       }
     }
+
+public ArrayList getDD(String tier, String win, int low, int high) {
+    ArrayList res = new ArrayList();
+    try{
+      String query="";
+      query = "SELECT dd,won FROM DOTA.master_distance where tier=? and won=? and tsync>=? and tsync<?;";
+      
+      PreparedStatement preparedStmt = conn.prepareStatement(query);
+      
+      preparedStmt.setString(1, tier);
+      preparedStmt.setString(2, win);
+      preparedStmt.setInt(3, low);
+      preparedStmt.setInt(4, high);
+      ResultSet rs=preparedStmt.executeQuery();
+      while(rs.next())
+      {
+        //JsonObject jobj= new JsonObject();
+        //jobj.addProperty("team", rs.getString("team"));
+        //jobj.addProperty("tsync", rs.getInt("tsync"));
+        //jobj.addProperty("dd", (int)rs.getDouble("dd"));
+        //jobj.addProperty("tier", rs.getString("tier"));
+        //jobj.addProperty("win", rs.getString("won"));
+        /*if("Win\r".equals(rs.getString("won"))) {
+          jobj.addProperty("won", 1);
+        } else {
+          jobj.addProperty("won", 0);
+        }*/
+        res.add(rs.getDouble("dd"));
+      }
+      return res;  
+        
+    } catch(Exception e){
+      JsonObject jobj= new JsonObject();
+      jobj.addProperty("error", e.toString());
+      res.add(jobj);
+      return res;
+    }
+  }
 }

@@ -5,6 +5,9 @@
  */
 package com.dota.rs;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import java.util.ArrayList;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
@@ -24,6 +27,7 @@ import javax.ws.rs.QueryParam;
 @Path("dota")
 public class dota {
   Models model;
+  Gson gson= new Gson();
   @Context
   private UriInfo context;
 
@@ -65,6 +69,33 @@ public class dota {
     System.out.println("Reached getMZ"+tier+high+low);
     //TODO return proper representation object
     return(model.getMz(tier,low,high,colorsel));
+  }
+  
+  /**
+   * Retrieves representation of an instance of com.dota.rs.dota
+   * @param tier
+   * @param high
+   * @param low
+   * @param colorsel
+   * @return an instance of java.lang.String
+   */
+  @Path("getDD")
+  @GET
+  @Produces("application/json")
+  public String getDD(
+          @DefaultValue("0") @QueryParam("low") int low,
+          @DefaultValue("50") @QueryParam("high") int high
+  ) {
+    ArrayList res = new ArrayList();
+    res.add(model.getDD("Pro","Win\r",low,high));
+    res.add(model.getDD("Pro","Lose\r",low,high));
+    res.add(model.getDD("VeryHigh","Win\r",low,high));
+    res.add(model.getDD("VeryHigh","Lose\r",low,high));
+    res.add(model.getDD("High","Win\r",low,high));
+    res.add(model.getDD("High","Lose\r",low,high));
+    res.add(model.getDD("Normal","Win\r",low,high));
+    res.add(model.getDD("Normal","Lose\r",low,high));
+    return gson.toJson(res);
   }
 
   /**
