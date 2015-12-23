@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DOTA-2 Pro Analysis</title>
+    <meta charset="utf-8">
+    <link href=bootstrap-3.1.1-dist/css/bootstrap.css rel=stylesheet media="screen">
+    <style>
+      #editor
+      {
+        font: 10px sans-serif;
+      }
+        
+      #code
+      {
+        font: 10px sans-serif;
+      }
+        
+      .axis text {
+        font: 10px sans-serif;
+      }
+        
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: #000;
+      }
+        
+      .outer {
+        fill: none;
+        stroke: #cc2316;
+      }
+        
+        
+        
+      .arc path {
+        stroke: #fff;
+      }
+        
+        
+    </style>
+      
+  </head>
+  <body>
+    <ol class="breadcrumb">
+      <li class="active">Home</li>
+      <li><a href="box.html">Team Distribution</a></li>
+    </ol>
+    <div class="page-header">
+      <h1>Sample visualization for DOTA2 Spacio-Temporal Analysis</h1>
+      <h5>Showing data only for internal t=0 to t=50s</h5>
+    </div>
+    
+    <div id="menu" class="row">
+      <div class="col-md-2">
+        <select class="form-control highlow" id="sel1">
+          <option value="1">Live Maps</option>
+          <option value="0">Heat Maps</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <select class="form-control highlow" id="sel2">
+          <option value="1">Color By Team</option>
+          <option value="0">Color By Win/Lose</option>
+        </select>
+      </div>
+      <div class="input-group col-md-2">
+        <span class="input-group-addon" id="sizing-addon2">Low</span>
+        <input type="text" class="form-control highlow" placeholder="0" aria-describedby="sizing-addon2" id="low" disabled>
+        <span class="input-group-addon" id="sizing-addon3">High</span>
+        <input type="text" class="form-control highlow" placeholder="50" aria-describedby="sizing-addon3" id="highv" disabled>
+          
+      </div>
+      <button type="button" class="btn btn-success col-md-1" id="submit">Submit</button>
+      <button type="button" class="btn btn-danger col-md-1" id="clearMaps">Clear Maps</button>  
+     
+    </div>
+    <div class="container">
+      <div class="col-md-6">    
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h3 class="panel-title">Pro tier</h3>
+          </div>
+          <div class="panel-body">
+            <div class="col-lg-6" id ="pro"></div>
+          </div>
+        </div>
+      </div>    
+      <div class="col-md-6">    
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h3 class="panel-title">VeryHigh tier</h3>
+          </div>
+          <div class="panel-body">
+            <div class="col-lg-6" id ="vhigh"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">    
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h3 class="panel-title">High tier</h3>
+          </div>
+          <div class="panel-body">
+            <div class="col-lg-6" id ="high"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">    
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h3 class="panel-title">Normal (Novice) tier</h3>
+          </div>
+          <div class="panel-body">
+            <div class="col-lg-6" id ="normal"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+      
+      
+    <script src=bower_components/d3/d3.min.js></script>
+    <script src=bootstrap-3.1.1-dist/js/jquery.min.js></script>
+    <script src=bootstrap-3.1.1-dist/js/bootstrap.min.js></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

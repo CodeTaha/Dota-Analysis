@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+  <head>
+    <title>Average Distance Analysis with Box Plot</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href=bootstrap-3.1.1-dist/css/bootstrap.css rel=stylesheet media="screen">
+    <style>
+      .panel-body {
+        height:500px;
+      }
+    </style>
+  </head>
+  <body>
+    <ol class="breadcrumb">
+      <li><a href="index.html">Home</a></li>
+      <li class="active">Team Distribution</li>
+    </ol>
+    <div class="page-header">
+      <h1>Average distance between team players in DotA2</h1>
+      <h5>Showing data only for internal t=0 to t=200s</h5>
+    </div>
+    <!--<div id="menu" class="row">
+      
+      <div class="input-group col-md-4">
+        <span class="input-group-addon" id="sizing-addon2">Low</span>
+        <input type="text" class="form-control highlow" placeholder="Minimum 0" aria-describedby="sizing-addon2" id="low">
+        <span class="input-group-addon" id="sizing-addon3">High</span>
+        <input type="text" class="form-control highlow" placeholder="Max 4180" aria-describedby="sizing-addon3" id="highv">
+          
+      </div>
+      <div class="input-group col-md-8">
+        <button type="button" class="btn btn-success col-md-2" id="submit">Submit</button>
+        <button type="button" class="btn btn-danger col-md-2" id="clearMaps">Clear Maps</button>
+      </div>
+     
+    </div>-->
+    <div id="viz"></div>
+   
+    <script src=D3/d3_d3plus.js></script>
+    <script src="D3/d3plus.js"></script>
+    <script src=bootstrap-3.1.1-dist/js/jquery.min.js></script>
+    <script src=bootstrap-3.1.1-dist/js/bootstrap.min.js></script>
+    <script src="D3/plotly-latest.min.js"></script>
+    <script>
+      var xData = ["Pro<br>Win","Pro<br>Lose","Very High<br>Win","Very High<br>Lose","High<br>Win","High<br>Lose","Normal<br>Win","Normal<br>Lose"];
+      var colors = ['#A8CCE5', '#F99A95','#A8CCE5', '#F99A95','#A8CCE5', '#F99A95','#A8CCE5', '#F99A95'];
+      var low=0, high=50;
+      
+      $(".highlow").change(function(){
+        low = $("#low").val();
+        high = $("#highv").val();
+        console.log(low,high);
+      });
+     $("#submit").click(function(){
+       boxPlot();
+     });
+      var boxPlot = function () {
+      
+      d3.json("data/distance.json", function(error, datajson){
+        var data = [];
+        
+        for ( var i = 0; i < datajson.length; i ++ ) {
+          var result = {
+            type: 'box',
+            y: datajson[i],//.map(function(d){return d.dd;}),
+            name: xData[i],
+            boxpoints: 'all',
+            jitter: 0.5,
+            whiskerwidth: 0.2,
+            fillcolor: colors[i],
+            marker: {
+              size: 2
+            },
+            line: {
+              width: 1
+            }
+          };
+          data.push(result);
+        };
+        layout = {
+          title: 'Average distances between team membersof different tiers in DOTA2',
+          yaxis: {
+            autorange: true,
+            showgrid: true,
+            zeroline: true,
+            dtick: 5,
+            gridcolor: 'rgb(255, 255, 255)',
+            gridwidth: 1,
+            zerolinecolor: 'rgb(255, 255, 255)',
+            zerolinewidth: 2
+          },
+          margin: {
+            l: 40,
+            r: 30,
+            b: 80,
+            t: 100
+          },
+          paper_bgcolor: 'rgb(243, 243, 243)',
+          plot_bgcolor: 'rgb(243, 243, 243)',
+          width: 600,
+          height: 600,
+          showlegend: false
+        };
+        
+        $("#viz").empty();
+        Plotly.newPlot('viz', data, layout);
+      });
+    };
+    boxPlot();
+</script>
+  </body>
+</html>
