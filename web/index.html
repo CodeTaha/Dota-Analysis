@@ -41,6 +41,15 @@
       
   </head>
   <body>
+    <ol class="breadcrumb">
+      <li class="active">Home</li>
+      <li><a href="box.html">Team Distribution</a></li>
+    </ol>
+    <div class="page-header">
+      <h1>Sample visualization for DOTA2 Spacio-Temporal Analysis</h1>
+      <h5>Showing data only for internal t=0 to t=50s</h5>
+    </div>
+    
     <div id="menu" class="row">
       <div class="col-md-2">
         <select class="form-control highlow" id="sel1">
@@ -56,9 +65,9 @@
       </div>
       <div class="input-group col-md-2">
         <span class="input-group-addon" id="sizing-addon2">Low</span>
-        <input type="text" class="form-control highlow" placeholder="Minimum 0" aria-describedby="sizing-addon2" id="low">
+        <input type="text" class="form-control highlow" placeholder="0" aria-describedby="sizing-addon2" id="low" disabled>
         <span class="input-group-addon" id="sizing-addon3">High</span>
-        <input type="text" class="form-control highlow" placeholder="Max 4180" aria-describedby="sizing-addon3" id="highv">
+        <input type="text" class="form-control highlow" placeholder="50" aria-describedby="sizing-addon3" id="highv" disabled>
           
       </div>
       <button type="button" class="btn btn-success col-md-1" id="submit">Submit</button>

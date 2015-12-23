@@ -80,13 +80,13 @@ $( document ).ready(function() {
   });
   $("#submit").click(function(){
     proObj.clearMap();
+    vhighObj.clearMap();
+    highObj.clearMap();
+    normalObj.clearMap();
     
     proObj.spawn(sele, function(data){
       proObj.tempf(data);
     });
-    vhighObj.clearMap();
-    highObj.clearMap();
-    normalObj.clearMap();
     vhighObj.spawn(sele, function(data){
       vhighObj.tempf(data);
     });
@@ -130,7 +130,8 @@ DOTA.prototype.createMap = function() {
 DOTA.prototype.spawn = function(sele,callback){
   var svg1=this.svg;
   var tier= this.tier;
-  d3.json("api/dota/getMZ?tier="+tier+"&high="+high+"&low="+low+"&colorsel="+colorsel, function(error, data) {
+  console.log("calling data from="+"data/getMZ"+tier+".json")
+  d3.json("data/getMZ"+tier+colorsel+".json", function(error, data) {
     
     var tsync=new Array();
     //Converting my strings in int's

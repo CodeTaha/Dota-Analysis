@@ -17,7 +17,15 @@ and open the template in the editor.
     </style>
   </head>
   <body>
-    <div id="menu" class="row">
+    <ol class="breadcrumb">
+      <li><a href="index.html">Home</a></li>
+      <li class="active">Team Distribution</li>
+    </ol>
+    <div class="page-header">
+      <h1>Average distance between team players in DotA2</h1>
+      <h5>Showing data only for internal t=0 to t=200s</h5>
+    </div>
+    <!--<div id="menu" class="row">
       
       <div class="input-group col-md-4">
         <span class="input-group-addon" id="sizing-addon2">Low</span>
@@ -31,7 +39,7 @@ and open the template in the editor.
         <button type="button" class="btn btn-danger col-md-2" id="clearMaps">Clear Maps</button>
       </div>
      
-    </div>
+    </div>-->
     <div id="viz"></div>
    
     <script src=D3/d3_d3plus.js></script>
@@ -43,6 +51,7 @@ and open the template in the editor.
       var xData = ["Pro<br>Win","Pro<br>Lose","Very High<br>Win","Very High<br>Lose","High<br>Win","High<br>Lose","Normal<br>Win","Normal<br>Lose"];
       var colors = ['#A8CCE5', '#F99A95','#A8CCE5', '#F99A95','#A8CCE5', '#F99A95','#A8CCE5', '#F99A95'];
       var low=0, high=50;
+      
       $(".highlow").change(function(){
         low = $("#low").val();
         high = $("#highv").val();
@@ -52,9 +61,8 @@ and open the template in the editor.
        boxPlot();
      });
       var boxPlot = function () {
-      d3.json("api/dota/getDD?low="+low+"&high="+high, function(error, datajson){
-        console.log(datajson);
-        
+      
+      d3.json("data/distance.json", function(error, datajson){
         var data = [];
         
         for ( var i = 0; i < datajson.length; i ++ ) {
@@ -104,8 +112,7 @@ and open the template in the editor.
         Plotly.newPlot('viz', data, layout);
       });
     };
-    //boxPlot();
-
+    boxPlot();
 </script>
   </body>
 </html>
